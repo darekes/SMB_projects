@@ -22,6 +22,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         DatabaseService databaseService = new DatabaseService(context);
         databaseService.init();
+
         String productName = intent.getStringExtra("productName");
         int productPrice = intent.getIntExtra("productPrice", 0);
         int productQuantity = intent.getIntExtra("productQuantity", 0);
@@ -34,8 +35,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle("Product added!")
-                .setContentText("Name: " + productName + ", price: " + productPrice
-                        + ", quantity: " + productQuantity + ", is bought: " + isProductBought)
+                .setContentText("Name: " + productName + ", price: " + productPrice + ", quantity: " + productQuantity + ", is bought: " + isProductBought)
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setAutoCancel(true);

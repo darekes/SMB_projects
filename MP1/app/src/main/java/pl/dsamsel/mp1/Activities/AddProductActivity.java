@@ -64,8 +64,7 @@ public class AddProductActivity extends AppCompatActivity {
         sendBroadcastIntentWithExtras(productName, productPrice, productQuantity, isProductBought);
     }
 
-    private void sendBroadcastIntentWithExtras(String productName, int productPrice, int productQuantity,
-                                               boolean isProductBought) {
+    private void sendBroadcastIntentWithExtras(String productName, int productPrice, int productQuantity, boolean isProductBought) {
         Intent broadcastIntent = new Intent("pl.dsamsel.mp2.broadcast_intent");
         String permission = "pl.dsamsel.mp2.broadcast_intent.permission";
         broadcastIntent.putExtra("productName", productName);
