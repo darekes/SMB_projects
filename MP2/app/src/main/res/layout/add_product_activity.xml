@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp" >
+
+    <EditText
+        android:id="@+id/name_add_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/enter_name" >
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/price_add_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/enter_price">
+    </EditText>
+
+    <EditText
+        android:id="@+id/quantity_add_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/enter_quantity">
+    </EditText>
+
+    <CheckBox
+        android:id="@+id/is_bought_add_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/is_bought" />
+
+    <Button
+        android:id="@+id/submit_add_product"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#8BC34A"
+        android:text="@string/add_product" />
+
+</LinearLayout>

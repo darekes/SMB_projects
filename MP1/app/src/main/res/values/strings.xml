@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Product list application v1</string>
+    <string name="options">Options</string>
+    <string name="product_list">Product List</string>
+    <string name="product_list_name">Product list</string>
+    <string name="products">Products</string>
+    <string name="is_bought">Is bought ?</string>
+    <string name="enter_price">Enter price</string>
+    <string name="enter_name">Enter name</string>
+    <string name="modify_product">Update product</string>
+    <string name="product_id">Product id</string>
+    <string name="add_product">Add product</string>
+    <string name="delete_product">Delete product</string>
+    <string name="modify">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="back_to_homepage">Back to homepage</string>
+    <string name="submit">Submit</string>
+    <string name="product_list_application">Product list application</string>
+    <string name="font_size">Font size:</string>
+    <string name="font_color">Font color:</string>
+    <string name="buttons_background_color">Buttons background color:</string>
+    <string name="buttons_font_color">Buttons font color</string>
+    <string name="enter_quantity">Enter quantity</string>
+</resources>
