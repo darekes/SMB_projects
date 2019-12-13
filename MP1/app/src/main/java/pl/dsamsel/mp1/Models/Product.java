@@ -8,6 +8,13 @@ public class Product {
     private int quantity;
     private boolean isBought;
 
+    public Product(String name, int price, int quantity, boolean isBought) {
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        this.isBought = isBought;
+    }
+
     public Product(int id, String name, int price, int quantity, boolean isBought) {
         this.id = id;
         this.name = name;
@@ -16,12 +23,14 @@ public class Product {
         this.isBought = isBought;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public Product(){}
 
     public int getId() {
-        return this.id;
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setName(String name) {

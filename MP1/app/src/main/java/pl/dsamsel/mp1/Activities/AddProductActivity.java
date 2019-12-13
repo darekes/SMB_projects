@@ -11,8 +11,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import pl.dsamsel.mp1.Models.Product;
 import pl.dsamsel.mp1.R;
-import pl.dsamsel.mp1.Services.DatabaseService;
+import pl.dsamsel.mp1.Services.FirestoreDatabaseService;
 import pl.dsamsel.mp1.Services.PreferredGuiOptionsService;
 import pl.dsamsel.mp1.Services.SharedPreferencesService;
 
@@ -40,37 +41,41 @@ public class AddProductActivity extends AppCompatActivity {
         submitAddProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addNewProductToDatabaseAndSendBroadcastIntent(view);
+                Product product = retrieveProduct();
+                addNewProduct(product);
+                sendBroadcastIntentWithExtras(product);
                 navigateToProductListActivity(view);
             }
         });
     }
 
-    private void addNewProductToDatabaseAndSendBroadcastIntent(View view) {
-        DatabaseService databaseService = new DatabaseService(this);
-        databaseService.init();
+    private Product retrieveProduct() {
+        TextView nameField = findViewById(R.id.name_add_text);
+        TextView priceField = findViewById(R.id.price_add_text);
+        TextView quantityField = findViewById(R.id.quantity_add_text);
+        CheckBox isBoughtField = findViewById(R.id.is_bought_add_value);
 
-        TextView name = findViewById(R.id.name_add_text);
-        TextView price = findViewById(R.id.price_add_text);
-        TextView quantity = findViewById(R.id.quantity_add_text);
-        CheckBox isBought = findViewById(R.id.is_bought_add_value);
+        String name = nameField.getText().toString();
+        int price = Integer.parseInt(priceField.getText().toString());
+        int quantity = Integer.parseInt(quantityField.getText().toString());
+        boolean isBought = isBoughtField.isChecked();
 
-        String productName = name.getText().toString();
-        int productPrice = Integer.parseInt(price.getText().toString());
-        int productQuantity = Integer.parseInt(quantity.getText().toString());
-        boolean isProductBought = isBought.isChecked();
-        databaseService.insertProduct(productName, productPrice, productQuantity, isProductBought);
-
-        sendBroadcastIntentWithExtras(productName, productPrice, productQuantity, isProductBought);
+        return new Product(name, price, quantity, isBought);
     }
 
-    private void sendBroadcastIntentWithExtras(String productName, int productPrice, int productQuantity, boolean isProductBought) {
+    private void addNewProduct(Product product) {
+        FirestoreDatabaseService databaseService = new FirestoreDatabaseService();
+
+        databaseService.insertProduct(product);
+    }
+
+    private void sendBroadcastIntentWithExtras(Product product) {
         Intent broadcastIntent = new Intent("pl.dsamsel.mp2.broadcast_intent");
         String permission = "pl.dsamsel.mp2.broadcast_intent.permission";
-        broadcastIntent.putExtra("productName", productName);
-        broadcastIntent.putExtra("productPrice", productPrice);
-        broadcastIntent.putExtra("productQuantity", productQuantity);
-        broadcastIntent.putExtra("isProductBought", isProductBought);
+        broadcastIntent.putExtra("productName", product.getName());
+        broadcastIntent.putExtra("productPrice", product.getPrice());
+        broadcastIntent.putExtra("productQuantity", product.getQuantity());
+        broadcastIntent.putExtra("isProductBought", product.isBought());
         sendBroadcast(broadcastIntent, permission);
     }
 

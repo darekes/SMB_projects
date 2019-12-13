@@ -11,8 +11,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import pl.dsamsel.mp1.Models.Product;
 import pl.dsamsel.mp1.R;
-import pl.dsamsel.mp1.Services.DatabaseService;
+import pl.dsamsel.mp1.Services.FirestoreDatabaseService;
 import pl.dsamsel.mp1.Services.PreferredGuiOptionsService;
 import pl.dsamsel.mp1.Services.SharedPreferencesService;
 
@@ -54,22 +55,26 @@ public class ModifyProductActivity extends AppCompatActivity {
         updateProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateExistingProductInDatabase(view, editableProductId);
+                updateExistingProduct(editableProductId);
                 navigateToProductListActivity(view);
             }
         });
     }
 
-    private void updateExistingProductInDatabase(View view, long editableProductId) {
-        DatabaseService databaseService = new DatabaseService(this);
-        databaseService.init();
+    private void updateExistingProduct(long editableProductId) {
+        FirestoreDatabaseService databaseService = new FirestoreDatabaseService();
+        Product product = retrieveProduct(editableProductId);
 
+        databaseService.updateProduct(product);
+    }
+
+    private Product retrieveProduct(long editableProductId) {
         TextView name = findViewById(R.id.name_edit_text);
         TextView price = findViewById(R.id.price_edit_text);
         TextView quantity = findViewById(R.id.quantity_edit_text);
         CheckBox isBought = findViewById(R.id.is_bought_edit_value);
 
-        databaseService.updateProduct(editableProductId, name.getText().toString(),
+        return new Product(Math.toIntExact(editableProductId), name.getText().toString(),
                 Integer.parseInt(price.getText().toString()),
                 Integer.parseInt(quantity.getText().toString()), isBought.isChecked());
     }

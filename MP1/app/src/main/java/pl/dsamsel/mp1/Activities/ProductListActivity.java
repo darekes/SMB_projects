@@ -18,7 +18,7 @@ import pl.dsamsel.mp1.Adapters.ProductAdapter;
 import pl.dsamsel.mp1.Adapters.RecyclerViewClickListener;
 import pl.dsamsel.mp1.Models.Product;
 import pl.dsamsel.mp1.R;
-import pl.dsamsel.mp1.Services.DatabaseService;
+import pl.dsamsel.mp1.Services.FirestoreDatabaseService;
 import pl.dsamsel.mp1.Services.PreferredGuiOptionsService;
 import pl.dsamsel.mp1.Services.SharedPreferencesService;
 
@@ -74,19 +74,22 @@ public class ProductListActivity extends AppCompatActivity {
     }
 
     private void handleDeleteModifyProductButtonsListeners(View view, int position) {
-        DatabaseService databaseService = new DatabaseService(this);
-        databaseService.init();
         Product touchedProduct = getProductList().get(position);
 
         switch (view.getId()) {
             case R.id.delete_product_button:
-                databaseService.deleteProduct(touchedProduct.getId());
+                deleteProduct(touchedProduct.getId());
                 navigateToProductListActivity(view);
                 break;
             case R.id.modify_product_button:
                 navigateToModifyProductActivityWithExtras(view, touchedProduct);
                 break;
         }
+    }
+
+    private void deleteProduct(int productId) {
+        FirestoreDatabaseService databaseService = new FirestoreDatabaseService();
+        databaseService.deleteProduct(productId);
     }
 
     private void registerAddProductButtonListener() {
@@ -108,8 +111,7 @@ public class ProductListActivity extends AppCompatActivity {
     }
 
     private List<Product> getProductList() {
-        DatabaseService databaseService = new DatabaseService(this);
-        databaseService.init();
+        FirestoreDatabaseService databaseService = new FirestoreDatabaseService();
 
         return databaseService.getAllProducts();
     }
