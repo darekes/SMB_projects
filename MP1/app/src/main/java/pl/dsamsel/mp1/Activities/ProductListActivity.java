@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.util.Consumer;
+
 import java.util.List;
 
 import pl.dsamsel.mp1.Adapters.ProductAdapter;
@@ -32,29 +34,38 @@ public class ProductListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.product_list_activity);
 
-        RecyclerView productList = findViewById(R.id.product_list);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        final RecyclerView productList = findViewById(R.id.product_list);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         productList.setLayoutManager(linearLayoutManager);
 
-        handlePreferredColorOptions();
-        registerButtonsListeners();
+        final Context context = this;
 
-        DividerItemDecoration decoration = new DividerItemDecoration(productList.getContext(),
-                linearLayoutManager.getOrientation());
-        productList.addItemDecoration(decoration);
-
-        RecyclerViewClickListener recyclerViewClickListener = new RecyclerViewClickListener() {
+        Consumer<List<Product>> consumer = new Consumer<List<Product>>() {
             @Override
-            public void onClick(View view, int position) {
-                handleDeleteModifyProductButtonsListeners(view, position);
+            public void accept(List<Product> products) {
+
+                handlePreferredColorOptions();
+                registerButtonsListeners();
+
+                DividerItemDecoration decoration = new DividerItemDecoration(productList.getContext(),
+                        linearLayoutManager.getOrientation());
+                productList.addItemDecoration(decoration);
+
+                RecyclerViewClickListener recyclerViewClickListener = new RecyclerViewClickListener() {
+                    @Override
+                    public void onClick(View view, int position) {
+                        handleDeleteModifyProductButtonsListeners(view, position);
+                    }
+                };
+                ProductAdapter productAdapter = new ProductAdapter(products, context,
+                        recyclerViewClickListener);
+                productAdapter.notifyDataSetChanged();
+                productList.setAdapter(productAdapter);
             }
         };
 
-        ProductAdapter productAdapter = new ProductAdapter(getProductList(), this,
-                recyclerViewClickListener);
-        productAdapter.notifyDataSetChanged();
+        getProductList(consumer);
 
-        productList.setAdapter(productAdapter);
     }
 
     private void handlePreferredColorOptions() {
@@ -74,20 +85,28 @@ public class ProductListActivity extends AppCompatActivity {
     }
 
     private void handleDeleteModifyProductButtonsListeners(View view, int position) {
-        Product touchedProduct = getProductList().get(position);
+        final int positionFinal = position;
+        final View viewFinal = view;
+        Consumer<List<Product>> consumer = new Consumer<List<Product>>() {
+            @Override
+            public void accept(List<Product> products) {
+                Product touchedProduct = products.get(positionFinal);
 
-        switch (view.getId()) {
-            case R.id.delete_product_button:
-                deleteProduct(touchedProduct.getId());
-                navigateToProductListActivity(view);
-                break;
-            case R.id.modify_product_button:
-                navigateToModifyProductActivityWithExtras(view, touchedProduct);
-                break;
-        }
+                switch (viewFinal.getId()) {
+                    case R.id.delete_product_button:
+                        deleteProduct(touchedProduct.getId());
+                        navigateToProductListActivity(viewFinal);
+                        break;
+                    case R.id.modify_product_button:
+                        navigateToModifyProductActivityWithExtras(viewFinal, touchedProduct);
+                        break;
+                }
+            }
+        };
+        getProductList(consumer);
     }
 
-    private void deleteProduct(int productId) {
+    private void deleteProduct(String productId) {
         FirestoreDatabaseService databaseService = new FirestoreDatabaseService();
         databaseService.deleteProduct(productId);
     }
@@ -110,10 +129,9 @@ public class ProductListActivity extends AppCompatActivity {
         });
     }
 
-    private List<Product> getProductList() {
+    private List<Product> getProductList(Consumer<List<Product>> productsList) {
         FirestoreDatabaseService databaseService = new FirestoreDatabaseService();
-
-        return databaseService.getAllProducts();
+        return databaseService.getAllProducts(productsList);
     }
 
     private void navigateToAddProductActivity(View view) {

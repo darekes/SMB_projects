@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button productListButton;
     private Button optionsListButton;
+    private Button logoutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +31,14 @@ public class MainActivity extends AppCompatActivity {
     private void handlePreferredColorOptions() {
         productListButton = findViewById(R.id.product_list_button);
         optionsListButton = findViewById(R.id.options_button);
+        logoutButton = findViewById(R.id.logout_button);
 
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferencesService
                 .COLOR_PREFERENCES, Context.MODE_PRIVATE);
         PreferredGuiOptionsService preferredGuiOptionsService = new PreferredGuiOptionsService(sharedPreferences);
         preferredGuiOptionsService.setPreferredColorForButton(productListButton);
         preferredGuiOptionsService.setPreferredColorForButton(optionsListButton);
+        preferredGuiOptionsService.setPreferredColorForButton(logoutButton);
     }
 
     private void registerButtonListeners() {
@@ -52,6 +55,13 @@ public class MainActivity extends AppCompatActivity {
                 navigateToOptionsActivity(v);
             }
         });
+
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logout(v);
+            }
+        });
     }
 
     public void navigateToProductListActivity(View view){
@@ -61,6 +71,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void navigateToOptionsActivity(View view) {
         Intent intent = new Intent(this, ColorOptionsActivity.class);
+        startActivity(intent);
+    }
+
+    public void logout(View view) {
+        Intent intent = new Intent(this, LoginRegisterActivity.class);
         startActivity(intent);
     }
 }

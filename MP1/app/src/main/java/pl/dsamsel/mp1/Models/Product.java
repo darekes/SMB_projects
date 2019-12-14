@@ -2,7 +2,7 @@ package pl.dsamsel.mp1.Models;
 
 public class Product {
 
-    private int id;
+    private String id;
     private String name;
     private int price;
     private int quantity;
@@ -15,7 +15,7 @@ public class Product {
         this.isBought = isBought;
     }
 
-    public Product(int id, String name, int price, int quantity, boolean isBought) {
+    public Product(String id, String name, int price, int quantity, boolean isBought) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -25,11 +25,11 @@ public class Product {
 
     public Product(){}
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

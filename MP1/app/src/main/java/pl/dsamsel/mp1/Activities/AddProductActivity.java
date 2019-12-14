@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.UUID;
+
 import pl.dsamsel.mp1.Models.Product;
 import pl.dsamsel.mp1.R;
 import pl.dsamsel.mp1.Services.FirestoreDatabaseService;
@@ -55,12 +57,13 @@ public class AddProductActivity extends AppCompatActivity {
         TextView quantityField = findViewById(R.id.quantity_add_text);
         CheckBox isBoughtField = findViewById(R.id.is_bought_add_value);
 
+        String id = UUID.randomUUID().toString();
         String name = nameField.getText().toString();
         int price = Integer.parseInt(priceField.getText().toString());
         int quantity = Integer.parseInt(quantityField.getText().toString());
         boolean isBought = isBoughtField.isChecked();
 
-        return new Product(name, price, quantity, isBought);
+        return new Product(id, name, price, quantity, isBought);
     }
 
     private void addNewProduct(Product product) {

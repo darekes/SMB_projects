@@ -1,5 +1,6 @@
 package pl.dsamsel.mp1.Services;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -9,10 +10,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.util.Consumer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,10 +57,11 @@ public class FirestoreDatabaseService {
         firestoreDb.collection(PRODUCTS_COLLECTION)
                 .document(loggedInUserUid)
                 .collection(USER_SPECIFIC_PRODUCTS_COLLECTION)
-                .add(product)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                .document(product.getId())
+                .set(product)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
+                    public void onSuccess(Void aVoid) {
                         Log.d(DB_SERVICE_TAG, "Product added to database!");
                     }
                 })
@@ -75,7 +77,7 @@ public class FirestoreDatabaseService {
         firestoreDb.collection(PRODUCTS_COLLECTION)
                 .document(loggedInUserUid)
                 .collection(USER_SPECIFIC_PRODUCTS_COLLECTION)
-                .document(String.valueOf(product.getId()))
+                .document(product.getId())
                 .set(product)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -91,11 +93,11 @@ public class FirestoreDatabaseService {
                 });
     }
 
-    public void deleteProduct(int productId) {
+    public void deleteProduct(String productId) {
         firestoreDb.collection(PRODUCTS_COLLECTION)
                 .document(loggedInUserUid)
                 .collection(USER_SPECIFIC_PRODUCTS_COLLECTION)
-                .document(String.valueOf(productId))
+                .document(productId)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -111,40 +113,27 @@ public class FirestoreDatabaseService {
                 });
     }
 
-    public List<Product> getAllProducts() {
-        return readProducts(new FirestoreCallback() {
-            @Override
-            public List<Product> onCallback(List<Product> products) {
-                return products;
-            }
-        });
-    }
-
-    private List<Product> readProducts(final FirestoreCallback firestoreCallback) {
+    public List<Product> getAllProducts(final Consumer<List<Product>> productsList) {
         final List<Product> allProducts = new ArrayList<>();
         firestoreDb.collection(PRODUCTS_COLLECTION)
                 .document(loggedInUserUid)
                 .collection(USER_SPECIFIC_PRODUCTS_COLLECTION)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @SuppressLint("RestrictedApi")
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 allProducts.add(document.toObject(Product.class));
                             }
-
-                            firestoreCallback.onCallback(allProducts);
+                            productsList.accept(allProducts);
                         } else {
                             Log.w(DB_SERVICE_TAG, "Error when getting all products.", task.getException());
                         }
                     }
                 });
+
         return allProducts;
-    }
-
-
-    private interface FirestoreCallback {
-        List<Product> onCallback(List<Product> products);
     }
 }

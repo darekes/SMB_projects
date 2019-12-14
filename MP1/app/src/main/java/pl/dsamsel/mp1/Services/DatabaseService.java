@@ -66,7 +66,7 @@ public class DatabaseService {
             int price = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_PRICE));
             int quantity = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_QUANTITY));
             boolean isBought = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_IS_BOUGHT)) == 1;
-            productList.add(new Product(id, name, price, quantity, isBought));
+            productList.add(new Product(String.valueOf(id), name, price, quantity, isBought));
         }
 
         cursor.close();

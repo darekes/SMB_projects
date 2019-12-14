@@ -28,7 +28,7 @@ public class ModifyProductActivity extends AppCompatActivity {
         Intent intent = getIntent();
         fillFormWithCurrentValues(intent);
         handlePreferredColorOptions();
-        registerUpdateProductButtonListener(intent.getIntExtra("id", 0));
+        registerUpdateProductButtonListener(intent.getStringExtra("id"));
     }
 
     private void handlePreferredColorOptions() {
@@ -51,7 +51,7 @@ public class ModifyProductActivity extends AppCompatActivity {
         isBought.setChecked(intent.getBooleanExtra("isBought", false));
     }
 
-    private void registerUpdateProductButtonListener(final long editableProductId) {
+    private void registerUpdateProductButtonListener(final String editableProductId) {
         updateProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,20 +61,20 @@ public class ModifyProductActivity extends AppCompatActivity {
         });
     }
 
-    private void updateExistingProduct(long editableProductId) {
+    private void updateExistingProduct(String editableProductId) {
         FirestoreDatabaseService databaseService = new FirestoreDatabaseService();
         Product product = retrieveProduct(editableProductId);
 
         databaseService.updateProduct(product);
     }
 
-    private Product retrieveProduct(long editableProductId) {
+    private Product retrieveProduct(String editableProductId) {
         TextView name = findViewById(R.id.name_edit_text);
         TextView price = findViewById(R.id.price_edit_text);
         TextView quantity = findViewById(R.id.quantity_edit_text);
         CheckBox isBought = findViewById(R.id.is_bought_edit_value);
 
-        return new Product(Math.toIntExact(editableProductId), name.getText().toString(),
+        return new Product(editableProductId, name.getText().toString(),
                 Integer.parseInt(price.getText().toString()),
                 Integer.parseInt(quantity.getText().toString()), isBought.isChecked());
     }
