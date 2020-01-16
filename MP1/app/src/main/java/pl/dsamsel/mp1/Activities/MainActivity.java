@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
     private Button productListButton;
     private Button optionsListButton;
     private Button logoutButton;
+    private Button googleMapsButton;
+    private Button shopsListButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         productListButton = findViewById(R.id.product_list_button);
         optionsListButton = findViewById(R.id.options_button);
         logoutButton = findViewById(R.id.logout_button);
+        googleMapsButton = findViewById(R.id.google_map_button);
+        shopsListButton = findViewById(R.id.shops_button);
 
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferencesService
                 .COLOR_PREFERENCES, Context.MODE_PRIVATE);
@@ -39,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
         preferredGuiOptionsService.setPreferredColorForButton(productListButton);
         preferredGuiOptionsService.setPreferredColorForButton(optionsListButton);
         preferredGuiOptionsService.setPreferredColorForButton(logoutButton);
+        preferredGuiOptionsService.setPreferredColorForButton(googleMapsButton);
+        preferredGuiOptionsService.setPreferredColorForButton(shopsListButton);
     }
 
     private void registerButtonListeners() {
@@ -62,9 +68,23 @@ public class MainActivity extends AppCompatActivity {
                 logout(v);
             }
         });
+
+        googleMapsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigateToGoogleMapsActivity(v);
+            }
+        });
+
+        shopsListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigateToShopsListActivity(v);
+            }
+        });
     }
 
-    public void navigateToProductListActivity(View view){
+    public void navigateToProductListActivity(View view) {
         Intent intent = new Intent(this, ProductListActivity.class);
         startActivity(intent);
     }
@@ -76,6 +96,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void logout(View view) {
         Intent intent = new Intent(this, LoginRegisterActivity.class);
+        startActivity(intent);
+    }
+
+    public void navigateToGoogleMapsActivity(View view) {
+        Intent intent = new Intent(this, GoogleMapsActivity.class);
+        startActivity(intent);
+    }
+
+    public void navigateToShopsListActivity(View view) {
+        Intent intent = new Intent(this, ShopsListActivity.class);
         startActivity(intent);
     }
 }

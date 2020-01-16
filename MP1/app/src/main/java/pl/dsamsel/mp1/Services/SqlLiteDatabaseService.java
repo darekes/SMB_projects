@@ -12,17 +12,17 @@ import java.util.List;
 import pl.dsamsel.mp1.Database.DatabaseHelper;
 import pl.dsamsel.mp1.Models.Product;
 
-public class DatabaseService {
+public class SqlLiteDatabaseService {
 
     private DatabaseHelper dbHelper;
     private Context context;
     private SQLiteDatabase database;
 
-    public DatabaseService(Context context) {
+    public SqlLiteDatabaseService(Context context) {
         this.context = context;
     }
 
-    public DatabaseService init() throws SQLException {
+    public SqlLiteDatabaseService init() throws SQLException {
         dbHelper = new DatabaseHelper(context);
         database = dbHelper.getWritableDatabase();
         return this;

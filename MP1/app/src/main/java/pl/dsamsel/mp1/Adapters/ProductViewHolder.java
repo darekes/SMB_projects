@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import pl.dsamsel.mp1.R;
 
-public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class ProductViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     TextView name;
     TextView price;
@@ -20,7 +20,7 @@ public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickL
     Button modifyProductButton;
     private RecyclerViewClickListener recyclerViewClickListener;
 
-    ViewHolder(View view, Context context, RecyclerViewClickListener recyclerViewClickListener) {
+    ProductViewHolder(View view, Context context, RecyclerViewClickListener recyclerViewClickListener) {
         super(view);
         this.recyclerViewClickListener = recyclerViewClickListener;
         name = view.findViewById(R.id.product_name);

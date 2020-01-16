@@ -41,6 +41,8 @@ public class LoginRegisterActivity extends AppCompatActivity {
         setSignInMode();
     }
 
+
+
     private void handlePreferredColorOptions() {
         firstNameField = findViewById(R.id.first_name);
         lastNameField = findViewById(R.id.last_name);

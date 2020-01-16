@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.dsamsel.mp1.Models.Product;
+import pl.dsamsel.mp1.Models.Shop;
 import pl.dsamsel.mp1.Models.User;
 
 public class FirestoreDatabaseService {
@@ -27,6 +28,8 @@ public class FirestoreDatabaseService {
     private static final String USERS_COLLECTION = "users";
     private static final String PRODUCTS_COLLECTION = "products";
     private static final String USER_SPECIFIC_PRODUCTS_COLLECTION = "user_specific_products";
+    private static final String SHOPS_COLLECTION = "shops";
+    private static final String USER_SPECIFIC_SHOPS_COLLECTION = "user_specific_shops";
 
     private String loggedInUserUid;
     private FirebaseFirestore firestoreDb;
@@ -51,6 +54,90 @@ public class FirestoreDatabaseService {
                         Log.w(DB_SERVICE_TAG, "Error when adding user to database", e);
                     }
                 });
+    }
+
+    public void insertShop(Shop shop) {
+        firestoreDb.collection(SHOPS_COLLECTION)
+                .document(loggedInUserUid)
+                .collection(USER_SPECIFIC_SHOPS_COLLECTION)
+                .document(shop.getId())
+                .set(shop)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(DB_SERVICE_TAG, "Shop added to database!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(DB_SERVICE_TAG, "Error when adding shop to database.", e);
+                    }
+                });
+    }
+
+    public void updateShop(Shop shop) {
+        firestoreDb.collection(SHOPS_COLLECTION)
+                .document(loggedInUserUid)
+                .collection(USER_SPECIFIC_SHOPS_COLLECTION)
+                .document(shop.getId())
+                .set(shop)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(DB_SERVICE_TAG, "Shop updated in database!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(DB_SERVICE_TAG, "Error when updating shop in database.", e);
+                    }
+                });
+    }
+
+    public void deleteShop(String shopId) {
+        firestoreDb.collection(SHOPS_COLLECTION)
+                .document(loggedInUserUid)
+                .collection(USER_SPECIFIC_SHOPS_COLLECTION)
+                .document(shopId)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(DB_SERVICE_TAG, "Shop removed from database!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(DB_SERVICE_TAG, "Error when removing shop from database.", e);
+                    }
+                });
+    }
+
+    public List<Shop> getAllShops(final Consumer<List<Shop>> shopsList) {
+        final List<Shop> allShops = new ArrayList<>();
+        firestoreDb.collection(SHOPS_COLLECTION)
+                .document(loggedInUserUid)
+                .collection(USER_SPECIFIC_SHOPS_COLLECTION)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @SuppressLint("RestrictedApi")
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                allShops.add(document.toObject(Shop.class));
+                            }
+                            shopsList.accept(allShops);
+                        } else {
+                            Log.w(DB_SERVICE_TAG, "Error when getting all shops.", task.getException());
+                        }
+                    }
+                });
+
+        return allShops;
     }
 
     public void insertProduct(Product product) {

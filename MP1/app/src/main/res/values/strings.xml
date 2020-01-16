@@ -29,4 +29,21 @@
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>
     <string name="logout">Logout</string>
+    <string name="map">Map</string>
+    <string name="shops">Shops</string>
+    <string name="shop_list">Shop list</string>
+    <string name="enter_description">Enter description</string>
+    <string name="add_shop">Add shop</string>
+    <string name="enter_range">Enter range [m]</string>
+    <string name="enter_longitude">Enter longitude</string>
+    <string name="enter_latitude">Enter latitude</string>
+    <string name="get_location_from_map">GET LOCATION FROM MAP</string>
+    <string name="get_current_location">GET CURRENT LOCATION</string>
+    <string name="name_dots">Name:</string>
+    <string name="description_dots">Description:</string>
+    <string name="range_m_dots">Range [m]:</string>
+    <string name="go_to_homepage">GO TO HOMEPAGE</string>
+    <string name="go_to_map">GO TO MAP</string>
+    <string name="longitude">Longitude:</string>
+    <string name="latitude">Latitude:</string>
 </resources>

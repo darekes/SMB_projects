@@ -2,17 +2,11 @@ package pl.dsamsel.mp1.Services;
 
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import pl.dsamsel.mp1.Activities.LoginRegisterActivity;
 import pl.dsamsel.mp1.Activities.MainActivity;
@@ -39,19 +33,16 @@ public class AuthenticationService {
         }
 
         firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(context, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful() && firebaseAuth.getCurrentUser() != null) {
-                            navigateToMainActivity();
-                        } else {
-                            context.clearTextFields();
-                            String error = "Authentication failed! ";
-                            if (task.getException() != null && !Strings.isNullOrEmpty(task.getException().getMessage())) {
-                                error += task.getException().getMessage();
-                            }
-                            context.setErrorMessage(error);
+                .addOnCompleteListener(context, task -> {
+                    if (task.isSuccessful() && firebaseAuth.getCurrentUser() != null) {
+                        navigateToMainActivity();
+                    } else {
+                        context.clearTextFields();
+                        String error = "Authentication failed! ";
+                        if (task.getException() != null && !Strings.isNullOrEmpty(task.getException().getMessage())) {
+                            error += task.getException().getMessage();
                         }
+                        context.setErrorMessage(error);
                     }
                 });
     }
@@ -71,21 +62,18 @@ public class AuthenticationService {
         }
 
         firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(context, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            context.clearTextFields();
-                            insertUser(firstName, lastName, email);
-                            context.setSignInMode();
-                        } else {
-                            context.clearTextFields();
-                            String error = "Account creation failed! ";
-                            if (task.getException() != null && !Strings.isNullOrEmpty(task.getException().getMessage())) {
-                                error = task.getException().getMessage();
-                            }
-                            context.setErrorMessage(error);
+                .addOnCompleteListener(context, task -> {
+                    if (task.isSuccessful()) {
+                        context.clearTextFields();
+                        insertUser(firstName, lastName, email);
+                        context.setSignInMode();
+                    } else {
+                        context.clearTextFields();
+                        String error = "Account creation failed! ";
+                        if (task.getException() != null && !Strings.isNullOrEmpty(task.getException().getMessage())) {
+                            error = task.getException().getMessage();
                         }
+                        context.setErrorMessage(error);
                     }
                 });
     }

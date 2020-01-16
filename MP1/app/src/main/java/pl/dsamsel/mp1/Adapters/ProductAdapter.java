@@ -13,7 +13,7 @@ import java.util.List;
 import pl.dsamsel.mp1.Models.Product;
 import pl.dsamsel.mp1.R;
 
-public class ProductAdapter extends RecyclerView.Adapter<ViewHolder> {
+public class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
 
     private List<Product> productList;
     private Context context;
@@ -28,33 +28,33 @@ public class ProductAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.product_list_row, parent,false);
 
-        return new ViewHolder(view, context, recyclerViewClickListener);
+        return new ProductViewHolder(view, context, recyclerViewClickListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(@NonNull ProductViewHolder productViewHolder, final int position) {
         Product product = productList.get(position);
-        viewHolder.name.setText(product.getName());
-        viewHolder.price.setText(String.valueOf(product.getPrice()));
-        viewHolder.quantity.setText(String.valueOf(product.getQuantity()));
+        productViewHolder.name.setText(product.getName());
+        productViewHolder.price.setText(String.valueOf(product.getPrice()));
+        productViewHolder.quantity.setText(String.valueOf(product.getQuantity()));
         if (product.isBought()) {
-            viewHolder.isBought.setChecked(true);
+            productViewHolder.isBought.setChecked(true);
         } else {
-            viewHolder.isBought.setChecked(false);
+            productViewHolder.isBought.setChecked(false);
         }
 
-        viewHolder.modifyProductButton.setOnClickListener(new View.OnClickListener() {
+        productViewHolder.modifyProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 recyclerViewClickListener.onClick(view, position);
             }
         });
 
-        viewHolder.deleteProductButton.setOnClickListener(new View.OnClickListener() {
+        productViewHolder.deleteProductButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 recyclerViewClickListener.onClick(view, position);
