@@ -41,8 +41,7 @@ public class ShopsListActivity extends AppCompatActivity {
             handlePreferredColorOptions();
             registerButtonsListeners();
 
-            DividerItemDecoration decoration = new DividerItemDecoration(shopList.getContext(),
-                    linearLayoutManager.getOrientation());
+            DividerItemDecoration decoration = new DividerItemDecoration(shopList.getContext(), linearLayoutManager.getOrientation());
             shopList.addItemDecoration(decoration);
             ShopAdapter shopAdapter = new ShopAdapter(shops);
             shopAdapter.notifyDataSetChanged();

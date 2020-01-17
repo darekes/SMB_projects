@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
@@ -14,7 +13,6 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.util.Consumer;
 
 import java.util.ArrayList;
@@ -28,7 +26,6 @@ public class GeofenceBroadcastService extends Service {
     private GeofencingClient geofencingClient;
     private ArrayList<Geofence> geofenceList;
     private PendingIntent geofencePendingIntent;
-    private GeofenceBroadcastReceiver geofenceBroadcastReceiver;
 
     private static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
     static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
@@ -54,38 +51,24 @@ public class GeofenceBroadcastService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        geofenceList = new ArrayList<>();
         geofencingClient = LocationServices.getGeofencingClient(this);
         populateGeofenceList();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (geofenceBroadcastReceiver != null) {
-            unregisterReceiver(geofenceBroadcastReceiver);
-        }
-    }
-
-    @Override
-    public void onComplete(@NonNull Task<Void> task) {
-
-    }
-
     private void populateGeofenceList() {
         Consumer<List<Shop>> consumer = shops -> {
-            shops.forEach(shop -> {
-                geofenceList.add(new Geofence.Builder()
-                        .setRequestId(shop.getName())
-                        .setCircularRegion(
-                                shop.getLatitude(),
-                                shop.getLongitude(),
-                                GEOFENCE_RADIUS_IN_METERS
-                        )
-                        .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                                Geofence.GEOFENCE_TRANSITION_EXIT)
-                        .build());
-            });
+            shops.forEach(shop -> geofenceList.add(new Geofence.Builder()
+                    .setRequestId(shop.getName())
+                    .setCircularRegion(
+                            shop.getLatitude(),
+                            shop.getLongitude(),
+                            GEOFENCE_RADIUS_IN_METERS
+                    )
+                    .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                            Geofence.GEOFENCE_TRANSITION_EXIT)
+                    .build()));
         };
 
         getShopsList(consumer);
@@ -101,7 +84,9 @@ public class GeofenceBroadcastService extends Service {
             return;
         }
 
-        geofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent());
+        if (!geofenceList.isEmpty()) {
+            geofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent());
+        }
     }
 
     private GeofencingRequest getGeofencingRequest() {

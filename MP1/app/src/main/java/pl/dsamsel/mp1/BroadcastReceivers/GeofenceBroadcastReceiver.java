@@ -14,7 +14,6 @@ import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.List;
 
-import pl.dsamsel.mp1.Activities.MainActivity;
 import pl.dsamsel.mp1.R;
 
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
@@ -24,9 +23,12 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     private static final String UNKNOWN_GEOFENCE_TRANSITION = "Unknown geofence transition";
     private static final String CHANNEL_ID = "channel_01";
     private final String TAG = this.getClass().getSimpleName();
+    private Context context;
+    private int id = 123;
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        this.context = context;
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             return;
@@ -64,10 +66,9 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     }
 
     private void sendNotification(String notificationDetails) {
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(MainActivity.class, CHANNEL_ID)
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle("Geofence works!")
                 .setContentText(notificationDetails)
-                .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setAutoCancel(true);
 

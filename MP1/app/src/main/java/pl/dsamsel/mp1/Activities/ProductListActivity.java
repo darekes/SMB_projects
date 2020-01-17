@@ -40,28 +40,20 @@ public class ProductListActivity extends AppCompatActivity {
 
         final Context context = this;
 
-        Consumer<List<Product>> consumer = new Consumer<List<Product>>() {
-            @Override
-            public void accept(List<Product> products) {
+        Consumer<List<Product>> consumer = products -> {
 
-                handlePreferredColorOptions();
-                registerButtonsListeners();
+            handlePreferredColorOptions();
+            registerButtonsListeners();
 
-                DividerItemDecoration decoration = new DividerItemDecoration(productList.getContext(),
-                        linearLayoutManager.getOrientation());
-                productList.addItemDecoration(decoration);
+            DividerItemDecoration decoration = new DividerItemDecoration(productList.getContext(),
+                    linearLayoutManager.getOrientation());
+            productList.addItemDecoration(decoration);
 
-                RecyclerViewClickListener recyclerViewClickListener = new RecyclerViewClickListener() {
-                    @Override
-                    public void onClick(View view, int position) {
-                        handleDeleteModifyProductButtonsListeners(view, position);
-                    }
-                };
-                ProductAdapter productAdapter = new ProductAdapter(products, context,
-                        recyclerViewClickListener);
-                productAdapter.notifyDataSetChanged();
-                productList.setAdapter(productAdapter);
-            }
+            RecyclerViewClickListener recyclerViewClickListener = this::handleDeleteModifyProductButtonsListeners;
+            ProductAdapter productAdapter = new ProductAdapter(products, context,
+                    recyclerViewClickListener);
+            productAdapter.notifyDataSetChanged();
+            productList.setAdapter(productAdapter);
         };
 
         getProductList(consumer);

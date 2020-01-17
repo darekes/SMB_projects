@@ -1,10 +1,16 @@
 package pl.dsamsel.mp1.Activities;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -13,7 +19,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.Objects;
 
 import pl.dsamsel.mp1.R;
-import pl.dsamsel.mp1.Services.GeolocationService;
+import pl.dsamsel.mp1.Services.GeolocationPermissionService;
 
 public class AddShopGeoPointFromGoogleMapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -30,11 +36,16 @@ public class AddShopGeoPointFromGoogleMapActivity extends AppCompatActivity impl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GeolocationPermissionService.requestPermissionForLocation(this);
         setContentView(R.layout.add_shop_from_google_maps_activity);
+        saveShopDataFromIntent();
+        initMap();
+    }
+
+    private void initMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.add_shop_map);
         Objects.requireNonNull(mapFragment).getMapAsync(this);
-        saveShopDataFromIntent();
     }
 
     public void saveShopDataFromIntent() {
@@ -50,9 +61,16 @@ public class AddShopGeoPointFromGoogleMapActivity extends AppCompatActivity impl
         registerOnMapClickListener(googleMap);
     }
 
-    private void moveCameraToCurrentGeolocation(GoogleMap googleMap) {
-        GeolocationService geolocationService = new GeolocationService(this);
-        geolocationService.moveCameraToCurrentGeolocation(googleMap);
+    public void moveCameraToCurrentGeolocation(GoogleMap googleMap) {
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationProviderClient.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        googleMap.setMyLocationEnabled(true);
+                        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+                    }
+                });
     }
 
     private void registerOnMapClickListener(GoogleMap googleMap) {
@@ -64,9 +82,25 @@ public class AddShopGeoPointFromGoogleMapActivity extends AppCompatActivity impl
         intent.putExtra(NAME, shopName);
         intent.putExtra(DESCRIPTION, shopDescription);
         intent.putExtra(RANGE, shopRange);
-        intent.putExtra(LATITUDE, latLng.latitude);
-        intent.putExtra(LONGITUDE, latLng.longitude);
+        intent.putExtra(LATITUDE, String.valueOf(latLng.latitude));
+        intent.putExtra(LONGITUDE, String.valueOf(latLng.longitude));
 
         startActivity(intent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == GeolocationPermissionService.PERMISSION_REQUEST_LOCATION) {
+            if (grantResults.length > 0) {
+                for (int grantResult : grantResults) {
+                    if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+                initMap();
+            }
+        }
     }
 }

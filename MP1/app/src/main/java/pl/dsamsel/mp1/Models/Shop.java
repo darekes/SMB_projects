@@ -18,6 +18,8 @@ public class Shop {
         this.longitude = longitude;
     }
 
+    public Shop() {}
+
     public String getId() {
         return id;
     }

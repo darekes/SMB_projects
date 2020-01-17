@@ -3,12 +3,17 @@ package pl.dsamsel.mp1.Activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.common.base.Strings;
 
 import java.util.UUID;
@@ -16,7 +21,7 @@ import java.util.UUID;
 import pl.dsamsel.mp1.Models.Shop;
 import pl.dsamsel.mp1.R;
 import pl.dsamsel.mp1.Services.FirestoreDatabaseService;
-import pl.dsamsel.mp1.Services.GeolocationService;
+import pl.dsamsel.mp1.Services.GeolocationPermissionService;
 import pl.dsamsel.mp1.Services.PreferredGuiOptionsService;
 import pl.dsamsel.mp1.Services.SharedPreferencesService;
 
@@ -35,22 +40,19 @@ public class AddShopActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_shop_activity);
-
         handlePreferredColorOptions();
         registerButtonsListeners();
         saveShopDataFromGoogleMapIntent();
     }
 
     private void handlePreferredColorOptions() {
-        addShopButton = findViewById(R.id.submit_add_product);
+        addShopButton = findViewById(R.id.submit_add_shop);
         getCurrentGeolocationButton = findViewById(R.id.current_location_button);
         getGeolocationFromMapButton = findViewById(R.id.map_location_button);
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferencesService
                 .COLOR_PREFERENCES, Context.MODE_PRIVATE);
         PreferredGuiOptionsService preferredGuiOptionsService = new PreferredGuiOptionsService(sharedPreferences);
         preferredGuiOptionsService.setPreferredColorForButton(addShopButton);
-        preferredGuiOptionsService.setPreferredColorForButton(getCurrentGeolocationButton);
-        preferredGuiOptionsService.setPreferredColorForButton(getGeolocationFromMapButton);
     }
 
     private void registerButtonsListeners() {
@@ -69,10 +71,8 @@ public class AddShopActivity extends AppCompatActivity {
 
     private void registerGetCurrentGeolocationButtonListener() {
         getCurrentGeolocationButton.setOnClickListener(view -> {
-            TextView shopLatitudeField = findViewById(R.id.shop_latitude);
-            TextView shopLongitudeField = findViewById(R.id.shop_longitude);
-            GeolocationService geolocationService = new GeolocationService(this);
-            geolocationService.setCurrentGeolocationForFields(shopLatitudeField, shopLongitudeField);
+            GeolocationPermissionService.requestPermissionForLocation(this);
+            setCurrentGeolocationDetails();
         });
     }
 
@@ -120,6 +120,19 @@ public class AddShopActivity extends AppCompatActivity {
         longitudeField.setText(Strings.nullToEmpty(intent.getStringExtra(LONGITUDE)));
     }
 
+    public void setCurrentGeolocationDetails() {
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationProviderClient.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        TextView latitudeField = findViewById(R.id.shop_latitude_add_text);
+                        TextView longitudeField = findViewById(R.id.shop_longitude_add_text);
+                        latitudeField.setText(String.valueOf(location.getLatitude()));
+                        longitudeField.setText(String.valueOf(location.getLongitude()));
+                    }
+                });
+    }
+
     private void navigateToShopListActivity() {
         Intent intent = new Intent(this, ShopsListActivity.class);
         startActivity(intent);
@@ -148,5 +161,21 @@ public class AddShopActivity extends AppCompatActivity {
     private String getLongitudeFieldValue() {
         TextView longitudeField = findViewById(R.id.shop_longitude_add_text);
         return Strings.nullToEmpty(String.valueOf(longitudeField.getText()));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == GeolocationPermissionService.PERMISSION_REQUEST_LOCATION) {
+            if (grantResults.length > 0) {
+                for (int grantResult : grantResults) {
+                    if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+                setCurrentGeolocationDetails();
+            }
+        }
     }
 }

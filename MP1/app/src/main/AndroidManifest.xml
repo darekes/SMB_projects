@@ -3,19 +3,12 @@
     package="pl.dsamsel.mp1">
 
     <permission android:name="pl.dsamsel.mp2.broadcast_intent.permission"></permission>
-    <uses-permission
-        android:name="pl.dsamsel.mp2.broadcast_intent.permission"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="pl.dsamsel.mp2.broadcast_intent.permission"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <uses-feature android:name="android.hardware.camera"
         android:required="true" />
-
-    <meta-data
-        android:name="com.google.android.geo.API_KEY"
-        android:value="AIzaSyAiK0XV8_zLi0zShID4l5VPxwWT-uYTHsU"/>
 
     <application
         android:allowBackup="true"
@@ -24,6 +17,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAiK0XV8_zLi0zShID4l5VPxwWT-uYTHsU"/>
+
         <receiver android:name="pl.dsamsel.mp1.BroadcastReceivers.GeofenceBroadcastReceiver"/>
         <activity android:name="pl.dsamsel.mp1.Activities.LoginRegisterActivity">
             <intent-filter>

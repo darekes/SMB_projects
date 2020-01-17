@@ -1,11 +1,17 @@
 package pl.dsamsel.mp1.Activities;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -21,7 +27,7 @@ import java.util.Objects;
 import pl.dsamsel.mp1.Models.Shop;
 import pl.dsamsel.mp1.R;
 import pl.dsamsel.mp1.Services.FirestoreDatabaseService;
-import pl.dsamsel.mp1.Services.GeolocationService;
+import pl.dsamsel.mp1.Services.GeolocationPermissionService;
 
 public class GoogleMapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -36,8 +42,12 @@ public class GoogleMapsActivity extends AppCompatActivity implements OnMapReadyC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.google_maps_activity);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        GeolocationPermissionService.requestPermissionForLocation(this);
+        initMap();
+    }
+
+    private void initMap() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         Objects.requireNonNull(mapFragment).getMapAsync(this);
     }
 
@@ -73,11 +83,6 @@ public class GoogleMapsActivity extends AppCompatActivity implements OnMapReadyC
         );
     }
 
-    private void moveCameraToCurrentGeolocation(GoogleMap googleMap) {
-        GeolocationService geolocationService = new GeolocationService(this);
-        geolocationService.moveCameraToCurrentGeolocation(googleMap);
-    }
-
     private List<Shop> getShopsList(Consumer<List<Shop>> shopsList) {
         FirestoreDatabaseService databaseService = new FirestoreDatabaseService();
         return databaseService.getAllShops(shopsList);
@@ -99,5 +104,33 @@ public class GoogleMapsActivity extends AppCompatActivity implements OnMapReadyC
 
         startActivity(intent);
         return false;
+    }
+
+    public void moveCameraToCurrentGeolocation(GoogleMap googleMap) {
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationProviderClient.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        googleMap.setMyLocationEnabled(true);
+                        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+                    }
+                });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == GeolocationPermissionService.PERMISSION_REQUEST_LOCATION) {
+            if (grantResults.length > 0) {
+                for (int grantResult : grantResults) {
+                    if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+                initMap();
+            }
+        }
     }
 }
