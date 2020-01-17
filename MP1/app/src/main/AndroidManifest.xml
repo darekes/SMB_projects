@@ -47,6 +47,8 @@
         <activity android:name=".Activities.AddShopActivity" />
         <activity android:name=".Activities.ShopInfoActivity" />
         <activity android:name=".Activities.AddShopGeoPointFromGoogleMapActivity" />
+
+        <service android:name=".Services.GeofenceBroadcastService" />
     </application>
 
 </manifest>

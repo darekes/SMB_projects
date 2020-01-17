@@ -1,6 +1,7 @@
 package pl.dsamsel.mp1.Activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,8 +11,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import pl.dsamsel.mp1.BroadcastReceivers.GeofenceBroadcastReceiver;
 import pl.dsamsel.mp1.R;
 import pl.dsamsel.mp1.Services.AuthenticationService;
+import pl.dsamsel.mp1.Services.GeofenceBroadcastService;
 import pl.dsamsel.mp1.Services.PreferredGuiOptionsService;
 import pl.dsamsel.mp1.Services.SharedPreferencesService;
 
@@ -39,9 +42,12 @@ public class LoginRegisterActivity extends AppCompatActivity {
         handlePreferredColorOptions();
         registerButtonsListeners();
         setSignInMode();
+        startGeofenceBroadcastService();
     }
 
-
+    private void startGeofenceBroadcastService() {
+        startService(new Intent(LoginRegisterActivity.this, GeofenceBroadcastService.class));
+    }
 
     private void handlePreferredColorOptions() {
         firstNameField = findViewById(R.id.first_name);
