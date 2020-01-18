@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import pl.dsamsel.mp1.BroadcastReceivers.GeofenceBroadcastReceiver;
 import pl.dsamsel.mp1.R;
 import pl.dsamsel.mp1.Services.AuthenticationService;
 import pl.dsamsel.mp1.Services.GeofenceBroadcastService;
@@ -42,7 +41,6 @@ public class LoginRegisterActivity extends AppCompatActivity {
         handlePreferredColorOptions();
         registerButtonsListeners();
         setSignInMode();
-        startGeofenceBroadcastService();
     }
 
     private void startGeofenceBroadcastService() {

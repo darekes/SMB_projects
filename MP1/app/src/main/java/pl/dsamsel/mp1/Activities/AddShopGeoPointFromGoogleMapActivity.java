@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -21,7 +22,7 @@ import java.util.Objects;
 import pl.dsamsel.mp1.R;
 import pl.dsamsel.mp1.Services.GeolocationPermissionService;
 
-public class AddShopGeoPointFromGoogleMapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class AddShopGeoPointFromGoogleMapActivity extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
 
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";

@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -25,7 +26,7 @@ import pl.dsamsel.mp1.Services.GeolocationPermissionService;
 import pl.dsamsel.mp1.Services.PreferredGuiOptionsService;
 import pl.dsamsel.mp1.Services.SharedPreferencesService;
 
-public class AddShopActivity extends AppCompatActivity {
+public class AddShopActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     public static final String NAME = "name";
     public static final String DESCRIPTION = "description";

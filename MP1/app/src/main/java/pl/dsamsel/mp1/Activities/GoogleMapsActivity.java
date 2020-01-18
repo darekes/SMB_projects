@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -29,7 +30,7 @@ import pl.dsamsel.mp1.R;
 import pl.dsamsel.mp1.Services.FirestoreDatabaseService;
 import pl.dsamsel.mp1.Services.GeolocationPermissionService;
 
-public class GoogleMapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class GoogleMapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final String CIRCLE_RANGE_COLOR = "#2271cce7";
     public static final String NAME = "name";
