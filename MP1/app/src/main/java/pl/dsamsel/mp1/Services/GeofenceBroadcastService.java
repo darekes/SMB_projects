@@ -3,25 +3,19 @@ package pl.dsamsel.mp1.Services;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.firebase.firestore.util.Consumer;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import pl.dsamsel.mp1.BroadcastReceivers.GeofenceBroadcastReceiver;
-import pl.dsamsel.mp1.Models.Shop;
 
 public class GeofenceBroadcastService extends Service {
 
@@ -32,7 +26,6 @@ public class GeofenceBroadcastService extends Service {
     private static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
     static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
     static final float GEOFENCE_RADIUS_IN_METERS = 5000;
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     @Nullable
     @Override
@@ -54,60 +47,35 @@ public class GeofenceBroadcastService extends Service {
     }
 
     private void populateGeofenceList() {
-//        Consumer<List<Shop>> consumer = shops -> {
-//            shops.forEach(shop -> geofenceList.add(new Geofence.Builder()
-//                    .setRequestId(shop.getName())
-//                    .setCircularRegion(
-//                            shop.getLatitude(),
-//                            shop.getLongitude(),
-//                            GEOFENCE_RADIUS_IN_METERS
-//                    )
-//                    .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-//                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-//                            Geofence.GEOFENCE_TRANSITION_EXIT)
-//                    .build()));
-//        };
-//
-//        getShopsList(consumer);
-        Shop shop = new Shop("sadasd", "name1", "desc2", 100000.0, 52.22307701547054, 20.99426049739122);
-        geofenceList.add(new Geofence.Builder()
-                .setRequestId(shop.getName())
-                .setCircularRegion(
-                        shop.getLatitude(),
-                        shop.getLongitude(),
-                        GEOFENCE_RADIUS_IN_METERS
-                )
-                .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                        Geofence.GEOFENCE_TRANSITION_EXIT)
-                .build());
+        FirestoreDatabaseService firestoreDatabaseService = new FirestoreDatabaseService();
+        firestoreDatabaseService.getAllShops().forEach(shop -> geofenceList.add(new Geofence.Builder()
+                    .setRequestId(shop.getName())
+                    .setCircularRegion(
+                            shop.getLatitude(),
+                            shop.getLongitude(),
+                            GEOFENCE_RADIUS_IN_METERS
+                    )
+                    .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                            Geofence.GEOFENCE_TRANSITION_EXIT)
+                    .build()));
 
         addGeofences();
     }
 
-    private List<Shop> getShopsList(Consumer<List<Shop>> shopsList) {
-        FirestoreDatabaseService databaseService = new FirestoreDatabaseService();
-        return databaseService.getAllShops(shopsList);
-    }
-
     private void addGeofences() {
         if (!geofenceList.isEmpty()) {
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(null,
-                        new String[] { android.Manifest.permission.ACCESS_BACKGROUND_LOCATION }, 44);
-            } else {
-                startGeofencing();
-            }
+            startGeofencing();
         }
     }
 
     private void startGeofencing() {
         geofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "GOOD GEO", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Geofence added", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Geofence not added" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 

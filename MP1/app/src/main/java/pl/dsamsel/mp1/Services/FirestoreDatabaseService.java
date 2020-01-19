@@ -30,6 +30,7 @@ public class FirestoreDatabaseService {
     private static final String USER_SPECIFIC_PRODUCTS_COLLECTION = "user_specific_products";
     private static final String SHOPS_COLLECTION = "shops";
     private static final String USER_SPECIFIC_SHOPS_COLLECTION = "user_specific_shops";
+    private List<Shop> myAllShops = new ArrayList<>();
 
     private String loggedInUserUid;
     private FirebaseFirestore firestoreDb;
@@ -37,6 +38,7 @@ public class FirestoreDatabaseService {
     public FirestoreDatabaseService() {
         loggedInUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         firestoreDb = FirebaseFirestore.getInstance();
+        initShops();
     }
 
     void insertUser(User user) {
@@ -54,6 +56,11 @@ public class FirestoreDatabaseService {
                         Log.w(DB_SERVICE_TAG, "Error when adding user to database", e);
                     }
                 });
+    }
+
+    private void initShops() {
+        myAllShops.add(new Shop("sadasd", "name1", "desc1", 100000.0, 52.22307701547054, 20.99426049739122));
+        myAllShops.add(new Shop("sadasdadsd", "name2", "desc2", 100000.0, 37.3188, 122.1768));
     }
 
     public void insertShop(Shop shop) {
@@ -114,6 +121,10 @@ public class FirestoreDatabaseService {
                         Log.w(DB_SERVICE_TAG, "Error when removing shop from database.", e);
                     }
                 });
+    }
+
+    public List<Shop> getAllShops() {
+        return myAllShops;
     }
 
     public List<Shop> getAllShops(final Consumer<List<Shop>> shopsList) {

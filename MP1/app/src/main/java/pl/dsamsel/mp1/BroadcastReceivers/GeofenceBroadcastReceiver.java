@@ -18,8 +18,8 @@ import pl.dsamsel.mp1.R;
 
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
-    private static final String GEOFENCE_TRANSITION_ENTER_TEXT = "Welcome in";
-    private static final String GEOFENCE_TRANSITION_EXIT_TEXT = "Good bye from";
+    private static final String GEOFENCE_TRANSITION_ENTER_TEXT = "Welcome in ";
+    private static final String GEOFENCE_TRANSITION_EXIT_TEXT = "Good bye from ";
     private static final String UNKNOWN_GEOFENCE_TRANSITION = "Unknown geofence transition";
     private static final String CHANNEL_ID = "channel_01";
     private final String TAG = this.getClass().getSimpleName();
@@ -49,7 +49,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     private String getGeofenceTransitionDetails(int geofenceTransition, List<Geofence> triggeringGeofences) {
         String geofenceTransitionName = getTransitionString(geofenceTransition);
         StringBuilder triggeringGeofencesDetails = new StringBuilder(geofenceTransitionName);
-        triggeringGeofences.forEach(geofence -> triggeringGeofencesDetails.append(geofence.getRequestId()));
+        triggeringGeofences.forEach(geofence -> triggeringGeofencesDetails.append(" " + geofence.getRequestId()));
 
         return triggeringGeofencesDetails.toString();
     }
@@ -67,7 +67,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
     private void sendNotification(String notificationDetails) {
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setContentTitle("Geofence works!")
+                .setContentTitle(notificationDetails)
                 .setContentText(notificationDetails)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setAutoCancel(true);
