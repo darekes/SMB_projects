@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MP5</string>
+    <string name="browser">Browser</string>
+    <string name="appwidget_text">Multimedia widget</string>
+    <string name="add_widget">Add widget</string>
+    <string name="images">Images</string>
+    <string name="sounds">Sounds</string>
+    <string name="open_browser">OPEN BROWSER</string>
+</resources>
